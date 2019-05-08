@@ -25,21 +25,10 @@ public class CellSelect : MonoBehaviour
             {
                 Vector3 point = hit.point;
                 Vector2Int gridPoint = Geometry.GridFromPoint(point);
-                Debug.Log($"x: {gridPoint.x}, y: {gridPoint.y}, Enabled: {enabled}");
                 GameController.instance.PlacePiece(gridPoint, hit.transform.gameObject);
             }
         }
     }
-
-//    void PlacePiece(Vector2Int gridPoint)
-//    {
-//        var piecePrefab = GameController.instance.CurrentPlayer.PiecePrefab;
-//        var position = Geometry.PointFromGrid(gridPoint);
-//        var rotation = Quaternion.identity;
-//
-//        Instantiate(piecePrefab, position, rotation);
-//        GameController.instance.NextPlayer();
-//    }
     
    
 }

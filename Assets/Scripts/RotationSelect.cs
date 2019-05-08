@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Pentago;
@@ -11,7 +12,6 @@ public class RotationSelect : MonoBehaviour
     private bool _selectionStarted;
 
     private Vector3 _mousePositionStart;
-    private Vector3 _mousePositionEnd;
     private GameObject _rotatingPiece;
     // Start is called before the first frame update
     void Start()
@@ -30,7 +30,6 @@ public class RotationSelect : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && !_selectionStarted)
             {
                 _rotatingPiece = hit.transform.gameObject;
-                Debug.Log($"x: {Input.mousePosition.x}, y: {Input.mousePosition.y}");
                 _mousePositionStart = Input.mousePosition;
                 RotationStart();
             }
@@ -38,9 +37,10 @@ public class RotationSelect : MonoBehaviour
 
         if (_selectionStarted && Input.GetMouseButtonUp(0))
         {
-            Debug.Log($"x: {Input.mousePosition.x}, y: {Input.mousePosition.y}");
-            _mousePositionEnd = Input.mousePosition;
             RotationEnd();
+        } else if (_selectionStarted)
+        {
+            RotationInProgress(Input.mousePosition);
         }
     }
 
@@ -52,21 +52,66 @@ public class RotationSelect : MonoBehaviour
         _rotatingPiece.transform.position = shiftedUp;
     }
 
+    private Rotation _currentRotation = Rotation.None;
+    private Rotation _previousRotation = Rotation.None;
+
+    void RotationInProgress(Vector3 mousePosition)
+    {
+        _currentRotation = CalculateRotationDirection(mousePosition);
+
+        if (_currentRotation == _previousRotation) 
+            return;
+        
+        var degreesToRotate = 180.0f * (int)_currentRotation;
+        if (_previousRotation == Rotation.None)
+        {
+            degreesToRotate = 90.0f * (int)_currentRotation;
+        }
+
+        // Undo previous rotation
+        if (_currentRotation == Rotation.None)
+        {
+            degreesToRotate = 90.0f * (int) _previousRotation * -1;
+        }
+        
+        var upUnitVector = new Vector3(0.0f, 1.0f, 0.0f);
+        _rotatingPiece.transform.Rotate(upUnitVector, degreesToRotate);
+
+        _previousRotation = _currentRotation;
+    }
+
     void RotationEnd()
     {
         var shiftedUp = _rotatingPiece.transform.position;
         var originalPosition = new Vector3(shiftedUp.x, -0.5f, shiftedUp.z);
         _rotatingPiece.transform.position = originalPosition;
         _selectionStarted = false;
-        
-        var rotation = CalculateRotationDirection();
-        GameController.instance.RotateBoardSection(rotation);
+
+        if (_currentRotation != Rotation.None)
+        {
+            GameController.instance.RotateBoardSection(_currentRotation, _rotatingPiece);
+        }
+
+        _currentRotation = Rotation.None;
+        _previousRotation = Rotation.None;
     }
 
-    Rotation CalculateRotationDirection()
+    Rotation CalculateRotationDirection(Vector3 mousePositionEnd)
     {
-        var xDiff = _mousePositionStart.x - _mousePositionEnd.x;
-        return xDiff > 0 ? Rotation.AntiClockwise : Rotation.Clockwise;
+        var xDiff = _mousePositionStart.x - mousePositionEnd.x;
+        
+        // Must move at least 50 pixels to trigger a rotation
+        if (xDiff > 50)
+        {
+            return Rotation.AntiClockwise;
+        } 
+        
+        if (xDiff < -50)
+        {
+            return Rotation.Clockwise;
+        }
+
+        return Rotation.None;
     }
     
    
