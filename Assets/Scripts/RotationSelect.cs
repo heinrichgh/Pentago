@@ -7,15 +7,18 @@ using UnityEngine.Serialization;
 
 public class RotationSelect : MonoBehaviour
 {
+    public float upDistance;
+    public float sensitivity = 1.0f;
+
     private Camera _mainCamera;
-
     private bool _selectionStarted;
-
     private Vector3 _mousePositionStart;
     private GameObject _rotatingPiece;
-
     private Rotation _currentRotation = Rotation.None;
-    private Rotation _previousRotation = Rotation.None;
+    private Vector3 _startPosition;
+    private Quaternion _startRotation;
+    private Quaternion _rotation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,87 +35,98 @@ public class RotationSelect : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0) && !_selectionStarted)
             {
-                _rotatingPiece = hit.transform.gameObject;
-                _mousePositionStart = Input.mousePosition;
-                RotationStart();
+                RotationStart(hit);
             }
         }
 
         if (_selectionStarted && Input.GetMouseButtonUp(0))
         {
             RotationEnd();
-        } else if (_selectionStarted)
+        }
+        else if (_selectionStarted)
         {
-            RotationInProgress(Input.mousePosition);
+            RotationInProgress();
         }
     }
 
-    void RotationStart()
+    void RotationStart(RaycastHit hit)
     {
         _selectionStarted = true;
-        var startPosition = _rotatingPiece.transform.position;
-        var shiftedUp = new Vector3(startPosition.x, 0.0f, startPosition.z);
+        _rotatingPiece = hit.transform.gameObject;
+        _mousePositionStart = Input.mousePosition;
+        _startPosition = _rotatingPiece.transform.position;
+        _startRotation = _rotatingPiece.transform.rotation;
+        _rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+
+        var shiftedUp = new Vector3(_startPosition.x, _startPosition.y + upDistance, _startPosition.z);
         _rotatingPiece.transform.position = shiftedUp;
     }
 
-    void RotationInProgress(Vector3 mousePosition)
+    void RotationInProgress()
     {
-        _currentRotation = CalculateRotationDirection(mousePosition);
-
-        if (_currentRotation == _previousRotation) 
-            return;
+        var angle = (_mousePositionStart.x - Input.mousePosition.x) * sensitivity;
         
-        var degreesToRotate = 180.0f * (int)_currentRotation;
-        if (_previousRotation == Rotation.None)
+        RotateObject(angle);
+        
+        if (angle > 45)
         {
-            degreesToRotate = 90.0f * (int)_currentRotation;
+            _currentRotation = Rotation.Clockwise;
+        }
+        else if (angle < -45)
+        {
+            _currentRotation = Rotation.AntiClockwise;
+        }
+        else
+        {
+            _currentRotation = Rotation.None;
+        }
+    }
+
+    void RotateObject(float angle)
+    {
+        var startingEuler = _startRotation.eulerAngles;
+        Quaternion rotation = Quaternion.Euler(startingEuler.x, startingEuler.y + ClampRotation(angle), startingEuler.z);
+
+        _rotatingPiece.transform.rotation = rotation;
+    }
+
+    float ClampRotation(float rotate)
+    {
+        if (rotate > 90.0f)
+        {
+            return 90.0f;
+        }
+        
+        if (rotate < -90.0f)
+        {
+            return -90.0f;
         }
 
-        // Undo previous rotation
-        if (_currentRotation == Rotation.None)
-        {
-            degreesToRotate = 90.0f * (int) _previousRotation * -1;
-        }
-        
-        var upUnitVector = new Vector3(0.0f, 1.0f, 0.0f);
-        _rotatingPiece.transform.Rotate(upUnitVector, degreesToRotate);
-
-        _previousRotation = _currentRotation;
+        return rotate;
     }
 
     void RotationEnd()
     {
-        var shiftedUp = _rotatingPiece.transform.position;
-        var originalPosition = new Vector3(shiftedUp.x, -0.5f, shiftedUp.z);
-        _rotatingPiece.transform.position = originalPosition;
+        _rotatingPiece.transform.position = _startPosition;
         _selectionStarted = false;
 
         if (_currentRotation != Rotation.None)
         {
+            if (_currentRotation == Rotation.Clockwise)
+            {
+                RotateObject(90.0f);
+            } 
+            else if (_currentRotation == Rotation.AntiClockwise)
+            {
+                RotateObject(-90.0f);
+            }
             GameController.instance.RotateBoardSection(_currentRotation, _rotatingPiece);
+        }
+        else
+        {
+            RotateObject(0.0f);
         }
 
         _currentRotation = Rotation.None;
-        _previousRotation = Rotation.None;
     }
-
-    Rotation CalculateRotationDirection(Vector3 mousePositionEnd)
-    {
-        var xDiff = _mousePositionStart.x - mousePositionEnd.x;
-        
-        // Must move at least 50 pixels to trigger a rotation
-        if (xDiff > 50)
-        {
-            return Rotation.AntiClockwise;
-        } 
-        
-        if (xDiff < -50)
-        {
-            return Rotation.Clockwise;
-        }
-
-        return Rotation.None;
-    }
-    
-   
 }

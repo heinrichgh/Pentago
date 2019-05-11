@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 public class CellSelect : MonoBehaviour
 {
     private Camera _mainCamera;
+    private GameObject _previewPiece;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,12 +24,35 @@ public class CellSelect : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Vector3 point = hit.point;
-                Vector2Int gridPoint = Geometry.GridFromPoint(point);
-                GameController.instance.PlacePiece(gridPoint, hit.transform.gameObject);
+                PlacePiece(hit);
+            }
+            else
+            {
+                PlacePreviewPiece(hit);
             }
         }
     }
-    
-   
+
+    private void PlacePiece(RaycastHit hit)
+    {
+        Vector3 point = hit.point;
+        Vector2Int gridPoint = Geometry.GridFromPoint(point);
+        GameController.instance.PlacePiece(gridPoint, hit.transform.gameObject);
+        Destroy(_previewPiece);
+    }
+
+    private void PlacePreviewPiece(RaycastHit hit)
+    {
+        Destroy(_previewPiece);
+        Vector3 point = hit.point;
+        Vector2Int gridPoint = Geometry.GridFromPoint(point);
+        
+        if (!GameController.instance.Grid.IsPlaceEmpty(gridPoint.y, gridPoint.x))
+            return;
+        
+        var position = Geometry.PointFromGrid(gridPoint);
+        var rotation = Quaternion.identity;
+        var piecePrefab = GameController.instance.CurrentPlayer.PiecePrefab;
+        _previewPiece = Instantiate(piecePrefab, position, rotation);
+    }
 }

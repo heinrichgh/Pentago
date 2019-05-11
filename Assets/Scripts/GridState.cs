@@ -26,7 +26,7 @@ namespace Pentago
 
         public bool PlacePiece(int player, int row, int column)
         {
-            if (_grid[row, column] != 0)
+            if (!IsPlaceEmpty(row, column))
             {
                 return false;
             }
@@ -34,6 +34,11 @@ namespace Pentago
             _grid[row, column] = player;
 
             return true;
+        }
+
+        public bool IsPlaceEmpty(int row, int column)
+        {
+            return _grid[row, column] == 0;
         }
 
         public override string ToString()

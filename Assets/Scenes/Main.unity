@@ -247,8 +247,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203593085}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.5, y: -0.5, z: 1.5}
-  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_LocalPosition: {x: 1.5, y: -0.05, z: 1.5}
+  m_LocalScale: {x: 3, y: 0.1, z: 3}
   m_Children: []
   m_Father: {fileID: 1800821258}
   m_RootOrder: 2
@@ -496,8 +496,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675212057}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.5, y: -0.5, z: 1.5}
-  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_LocalPosition: {x: -1.5, y: -0.05, z: 1.5}
+  m_LocalScale: {x: 3, y: 0.1, z: 3}
   m_Children: []
   m_Father: {fileID: 1800821258}
   m_RootOrder: 3
@@ -747,11 +747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a677522915fa064995e022b79588dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xAngle: 1
-  yAngle: 1
-  zAngle: 1
-  selfMat: {fileID: 0}
-  worldMat: {fileID: 0}
+  sensitivity: 3
 --- !u!1 &1067438682
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,8 +833,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1067438682}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.5, y: -0.5, z: -1.5}
-  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_LocalPosition: {x: -1.5, y: -0.05, z: -1.5}
+  m_LocalScale: {x: 3, y: 0.1, z: 3}
   m_Children: []
   m_Father: {fileID: 1800821258}
   m_RootOrder: 0
@@ -870,8 +866,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1255197951}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.5, y: -0.5, z: -1.5}
-  m_LocalScale: {x: 3, y: 1, z: 3}
+  m_LocalPosition: {x: 1.5, y: -0.05, z: -1.5}
+  m_LocalScale: {x: 3, y: 0.1, z: 3}
   m_Children: []
   m_Father: {fileID: 1800821258}
   m_RootOrder: 1
@@ -1109,3 +1105,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 738ac54271ae4cfe9f25127c2b0b228f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  upDistance: 0.5
+  sensitivity: 0.2
