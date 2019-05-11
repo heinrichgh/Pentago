@@ -1106,4 +1106,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upDistance: 0.5
-  sensitivity: 0.2
+  sensitivity: 0.4

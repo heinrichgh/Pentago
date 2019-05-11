@@ -49,8 +49,10 @@ public class RotationSelect : MonoBehaviour
         }
     }
 
+    private Vector3 _hitSpot;
     void RotationStart(RaycastHit hit)
     {
+        _hitSpot = hit.point;
         _selectionStarted = true;
         _rotatingPiece = hit.transform.gameObject;
         _mousePositionStart = Input.mousePosition;
@@ -64,7 +66,20 @@ public class RotationSelect : MonoBehaviour
 
     void RotationInProgress()
     {
-        var angle = (_mousePositionStart.x - Input.mousePosition.x) * sensitivity;
+        var angleVector = (_mousePositionStart - Input.mousePosition) * sensitivity;
+        
+        // Calculate the appropriate direction of rotation based on where in the board section you started dragging.
+        if (_hitSpot.x < _rotatingPiece.transform.position.x)
+        {
+            angleVector.y *= -1.0f;
+        }
+
+        if (_hitSpot.z > _rotatingPiece.transform.position.z)
+        {
+            angleVector.x *= -1.0f;
+        }
+
+        var angle = 0.5f * angleVector.x + 0.5f * angleVector.y;
         
         RotateObject(angle);
         
