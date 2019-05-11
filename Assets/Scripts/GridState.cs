@@ -126,27 +126,9 @@ namespace Pentago
                 for (int col = 0; col < 6; col++)
                 {
                     var piece = _grid[row, col];
-                    if (piece != 0)
+                    if (CountForWin(piece, ref count, ref player))
                     {
-                        if (count == 0)
-                        {
-                            count = 1;
-                            player = piece;
-                        }
-                        else if (piece == player)
-                        {
-                            count++;
-                        }
-                        else if (piece != player)
-                        {
-                            player = piece;
-                            count = 1;
-                        }
-
-                        if (count == 5)
-                        {
-                            return player;
-                        }
+                        return player;
                     }
                 }
 
@@ -167,27 +149,9 @@ namespace Pentago
                 for (int row = 0; row < 6; row++)
                 {
                     var piece = _grid[row, col];
-                    if (piece != 0)
+                    if (CountForWin(piece, ref count, ref player))
                     {
-                        if (count == 0)
-                        {
-                            count = 1;
-                            player = piece;
-                        }
-                        else if (piece == player)
-                        {
-                            count++;
-                        }
-                        else if (piece != player)
-                        {
-                            player = piece;
-                            count = 1;
-                        }
-
-                        if (count == 5)
-                        {
-                            return player;
-                        }
+                        return player;
                     }
                 }
 
@@ -218,28 +182,9 @@ namespace Pentago
                         }
                         
                         var piece = _grid[rowI, colI];
-                        
-                        if (piece != 0)
+                        if (CountForWin(piece, ref count, ref player))
                         {
-                            if (count == 0)
-                            {
-                                count = 1;
-                                player = piece;
-                            }
-                            else if (piece == player)
-                            {
-                                count++;
-                            }
-                            else if (piece != player)
-                            {
-                                player = piece;
-                                count = 1;
-                            }
-
-                            if (count == 5)
-                            {
-                                return player;
-                            }
+                            return player;
                         }
                     }
 
@@ -271,27 +216,9 @@ namespace Pentago
                         }
                         
                         var piece = _grid[rowI, colI];
-                        
-                        if (piece != 0)
+                        if (CountForWin(piece, ref count, ref player))
                         {
-                            if (count == 0)
-                            {
-                                count++;
-                                player = piece;
-                            }
-                            else if (piece == player)
-                            {
-                                count++;
-                            }
-                            else
-                            {
-                                count = 0;
-                            }
-
-                            if (count == 5)
-                            {
-                                return player;
-                            }
+                            return player;
                         }
                     }
 
@@ -301,6 +228,37 @@ namespace Pentago
             }
 
             return 0;
+        }
+
+        private bool CountForWin(int piece, ref int count, ref int player)
+        {
+            if (piece == 0)
+            {
+                count = 0;
+                return false;
+            }
+            
+            if (count == 0)
+            {
+                count = 1;
+                player = piece;
+            }
+            else if (piece == player)
+            {
+                count++;
+
+                if (count == 5)
+                {
+                    return true;
+                }
+            }
+            else if (piece != player)
+            {
+                player = piece;
+                count = 1;
+            }
+
+            return false;
         }
 
         private int CheckDraw()

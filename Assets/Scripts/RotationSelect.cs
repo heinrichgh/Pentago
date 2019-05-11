@@ -13,6 +13,9 @@ public class RotationSelect : MonoBehaviour
 
     private Vector3 _mousePositionStart;
     private GameObject _rotatingPiece;
+
+    private Rotation _currentRotation = Rotation.None;
+    private Rotation _previousRotation = Rotation.None;
     // Start is called before the first frame update
     void Start()
     {
@@ -51,9 +54,6 @@ public class RotationSelect : MonoBehaviour
         var shiftedUp = new Vector3(startPosition.x, 0.0f, startPosition.z);
         _rotatingPiece.transform.position = shiftedUp;
     }
-
-    private Rotation _currentRotation = Rotation.None;
-    private Rotation _previousRotation = Rotation.None;
 
     void RotationInProgress(Vector3 mousePosition)
     {
